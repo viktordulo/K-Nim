@@ -1,0 +1,63 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>k-Nim</title>
+    <style>
+        div {
+            display: grid;
+            font-size: 20px;
+            margin: 10px;
+        }
+        input {
+            font-size: 16px;
+            width: 50%;
+        }
+        button {
+            width: 20%;
+            height: 30px;
+            font-size: 20px;
+        }
+        #final-submit {
+            visibility: hidden;
+        }
+        #start-inputs {
+            margin-bottom: 50px;
+        }
+        .heap input {
+            width: 30%;
+        }
+    </style>
+</head>
+
+<body>
+    <template id="for-heaps">
+        <div id="heap">
+            <label>Кількість камінців у купці</label>
+            <input type="number" min="1">
+        </div>
+    </template>
+    <section id="start-inputs">
+        <div id="N">
+            <label for="heapsCount">Кількість наявних купок</label>
+            <input id="heapsCount" type="number" min="1" />
+        </div>
+        <div id="K">
+            <label for="canTake">Зі скількох купок можна забирати камінці</label>
+            <input id="canTake" type="number" min="1"/>
+        </div>
+        <div id="send">
+            <button type="submit" id="first-submit">Підтвердити</button>
+        </div>
+    </section>
+    <section id="heaps">
+        <div id="heap-inputs">
+            <button type="submit" id="final-submit">Обчислити</button>
+        </div>
+    </section>
+
+    <script type="module" src="JS/app.js"></script>
+</body>
+
+</html>
