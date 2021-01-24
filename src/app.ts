@@ -108,8 +108,8 @@ function start() {
                         if (!(j in usedHeaps) && !isFilled) { // Check if we already used this heap.
                             usedHeaps.push(j);
                             if (usedHeaps.length === k) isFilled = true;
-                        } 
-                        
+                        }
+
                         if (checkIn(j, usedHeaps)) { // Same check but with custom function, because 'in' works incorrect sometimes.
                             bit -= minus;
                             let temp = +heaps2[j].charAt(i) - minus;
@@ -124,9 +124,79 @@ function start() {
 
         }
     }
-    console.log('final heap: ',heaps2);
+    console.log('final heap: ', heaps2);
 
     // Finding the sum of bits of final heaps in every position saving module dividing on k+1.
+    sumOfBits = '';
+
+    for (let j = 0; j < longestCharNumber; j++) {
+        let sum: number = 0;
+        for (let i = 0; i < heaps2.length; i++) {
+            sum += +heaps2[i].charAt(j);
+
+        }
+        sumOfBits += (sum % (k + 1)).toString();
+    }
+
+    // Check if sum of bits is 0
+    check = 0;
+    for (let i = 0; i < sumOfBits.length; i++) {
+        check += +sumOfBits.charAt(i);
+    }
+
+    // Adding bits if needed
+    let checkSums: [number, number]; // Stores the sum of bits of all heaps at needed position.
+    if (check !== 0) {
+        for (let i = 0; i < sumOfBits.length; i++) { // Checks every bit.
+            if (sumOfBits.charAt(i) !== '0') {
+                checkSums = checkSum(i, heaps2, usedHeaps);
+                if (isFilled) { // Check if we used all possible heaps.
+                    if (k + 1 - checkSums[0] <= checkSums[1]) { // Checks if we the difference between all possible moves +1 and sum of bits is less than zero bits count in used heaps.
+                        let difference: number = k + 1 - checkSums[0]; // The difference between all possible moves +1 and sum of bits.
+                        for (let j = 0; j < heaps2.length && difference > 0; j++) { // Go through every heap.
+                            if (checkIn(j, usedHeaps) && heaps2[j].charAt(i) === '0') {
+                                heaps2[j] = heaps2[j].substr(0, i) + '1' + heaps2[j].substr(i + 1); // Change the heap.
+                                difference--;
+                            }
+                        }
+                    }
+                } else {
+                    if (k + 1 - checkSums[0] <= checkSums[1]) { // Checks if we the difference between all possible moves +1 is less than zero bits count in used heaps.
+                        let difference: number = k + 1 - checkSums[0]; // The difference between all possible moves +1 and sum of bits
+                        for (let j = 0; j < heaps2.length && difference > 0; j++) { // Go through every heap.
+                            if (checkIn(j, usedHeaps) && heaps2[j].charAt(i) === '0') {
+                                heaps2[j] = heaps2[j].substr(0, i) + '1' + heaps2[j].substr(i + 1); // Change the heap.
+                                difference--;
+                            }
+                        }
+                    } else {
+                        // if needed difference <= all heaps zeros at i position && zeros count except used heaps <= possible heaps count to use
+                        if (k + 1 - checkSums[0] <= heaps2.length - checkSums[0] && heaps2.length - checkSums[0] - checkSums[1] <= k - usedHeaps.length) {
+                            let difference: number = k+1 - checkSums[0]; // The difference between all possible moves +1 and sum of bits
+                            for (let j = 0; j < heaps2.length && difference; j++) { // Go through every heap.
+                                if (checkIn(j, usedHeaps) && heaps2[j].charAt(i) === '0') { //If heap was already used.
+                                    heaps2[j] = heaps2[j].substr(0, i) + '1' + heaps2[j].substr(i + 1); // Change the heap.
+                                    difference--;
+                                } else {
+                                    if (heaps2[j].charAt(i) === '0') {
+                                        usedHeaps.push(j); // Heap wasn't used so we add it to used.
+                                        if (usedHeaps.length === k) isFilled = true;
+                                        heaps2[j] = heaps2[j].substr(0, i) + '1' + heaps2[j].substr(i + 1); // Change the heap.
+                                        difference--;
+                                    }
+                                }
+                                
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    console.log('final-final heaps: ', heaps2);
+
+    // Finding the sum of bits of final-final heaps in every position saving module dividing on k+1.
     sumOfBits = '';
 
     for (let j = 0; j < longestCharNumber; j++) {
@@ -149,7 +219,7 @@ function start() {
             finalHeaps.push(parseInt(heaps2[i], 2)); // Converting binary heaps to decimal.
 
         }
-        alert("Стан після виграшного ходу:\n" + finalHeaps);
+        alert("Використано купок:\n" + usedHeaps.length + "\n" + "Стан після виграшного ходу:\n" + finalHeaps);
     } else {
         alert('Виграш неможливий');
     }
@@ -160,8 +230,7 @@ function start() {
 }
 
 
-
-
+// Works the same as 'x in array'. Created, because regular 'in' sometimes works incorrect.
 function checkIn(a: number, array: number[]): boolean {
     for (let i = 0; i < array.length; i++) {
         if (a === array[i]) {
@@ -169,4 +238,18 @@ function checkIn(a: number, array: number[]): boolean {
         }
     }
     return false;
+}
+
+
+// Saves the sum of all bits from all heaps and zeros at used heaps.
+function checkSum(position: number, array: string[], used: number[]): [number, number] {
+    let sum = 0;
+    let zeros = 0;
+    for (let i = 0; i < array.length; i++) {
+        if (checkIn(i, used)) {
+            if (array[i].charAt(position) === '0') zeros++;
+        }
+        sum += +array[i].charAt(position);
+    }
+    return [sum, zeros];
 }
